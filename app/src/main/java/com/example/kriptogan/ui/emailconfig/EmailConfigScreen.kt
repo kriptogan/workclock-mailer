@@ -53,7 +53,7 @@ fun EmailConfigScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { viewModel.saveConfig() },
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(bottom = 80.dp, end = 16.dp)
             ) {
                 if (uiState.isSaving) {
                     CircularProgressIndicator(
@@ -204,8 +204,8 @@ fun EmailConfigScreen(
                     }
                 }
 
-                // Spacer for FAB
-                Spacer(modifier = Modifier.height(80.dp))
+                // Spacer for FAB and bottom navigation bar
+                Spacer(modifier = Modifier.height(120.dp))
             }
         }
     }

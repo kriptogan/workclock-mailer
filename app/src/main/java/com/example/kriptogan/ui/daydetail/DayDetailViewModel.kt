@@ -39,16 +39,23 @@ class DayDetailViewModel(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             try {
-                val workDay = workDayRepository.getWorkDayByDate(date)
-                val timeEntries = if (workDay != null) {
-                    workDayRepository.getWorkDaysInDateRangeSync(date, date)
-                        .firstOrNull()?.timeEntries ?: emptyList()
-                } else {
-                    emptyList()
+                var workDay = workDayRepository.getWorkDayByDate(date)
+                
+                // If work day doesn't exist, create it with NORMAL type
+                if (workDay == null) {
+                    val newWorkDay = WorkDay(
+                        date = date,
+                        dayType = DayType.NORMAL
+                    )
+                    val workDayId = workDayRepository.insertOrUpdateWorkDay(newWorkDay)
+                    workDay = newWorkDay.copy(id = workDayId)
                 }
                 
+                val timeEntries = workDayRepository.getWorkDaysInDateRangeSync(date, date)
+                    .firstOrNull()?.timeEntries ?: emptyList()
+                
                 val settings = settingsRepository.getSettings()
-                val calculation = if (workDay != null && settings != null) {
+                val calculation = if (settings != null) {
                     val workDayWithEntries = com.example.kriptogan.data.repository.WorkDayWithEntries(
                         workDay,
                         timeEntries
@@ -59,7 +66,7 @@ class DayDetailViewModel(
                 _uiState.value = _uiState.value.copy(
                     workDay = workDay,
                     timeEntries = timeEntries,
-                    dayType = workDay?.dayType ?: DayType.NORMAL,
+                    dayType = workDay.dayType,
                     calculation = calculation,
                     isLoading = false
                 )
