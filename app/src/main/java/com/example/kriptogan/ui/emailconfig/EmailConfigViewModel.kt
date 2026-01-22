@@ -73,14 +73,28 @@ class EmailConfigViewModel(
     fun handleSignInResult(account: com.google.android.gms.auth.api.signin.GoogleSignInAccount?) {
         viewModelScope.launch {
             if (account != null) {
-                // Get tokens from account (this would need to be implemented with OAuth flow)
                 val email = account.email
+                
+                // Request server auth code to exchange for tokens
+                // Note: For production, you'd need to exchange the server auth code
+                // with your backend to get access/refresh tokens
+                // For now, we'll just save the email and mark as signed in
+                
                 _uiState.value = _uiState.value.copy(
                     isSignedIn = true,
                     senderEmail = email
                 )
+                
                 // Save to repository
                 updateSenderEmail(email)
+                
+                // Refresh auth status to ensure consistency
+                checkAuthStatus()
+            } else {
+                _uiState.value = _uiState.value.copy(
+                    isSignedIn = false,
+                    saveMessage = "Sign in failed. Please try again."
+                )
             }
         }
     }

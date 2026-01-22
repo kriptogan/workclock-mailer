@@ -24,7 +24,8 @@ import java.time.LocalDate
 
 @Composable
 fun NavigationGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    onSignInRequest: ((com.google.android.gms.auth.api.signin.GoogleSignInAccount?) -> Unit) -> Unit = {}
 ) {
     NavHost(
         navController = navController,
@@ -101,11 +102,14 @@ fun NavigationGraph(
                     RepositoryProvider.getGmailAuthService()
                 )
             }
+            
             EmailConfigScreen(
                 viewModel = emailConfigViewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onSignInRequest = {
-                    // TODO: Handle sign in request
+                    onSignInRequest { account ->
+                        emailConfigViewModel.handleSignInResult(account)
+                    }
                 }
             )
         }

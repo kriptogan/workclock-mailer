@@ -34,14 +34,8 @@ class GmailAuthService(private val context: Context) {
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
 
-    suspend fun signIn(): GoogleSignInAccount? {
-        return try {
-            val account = signInClient.signInIntent
-            // This will be handled by the activity result
-            null
-        } catch (e: Exception) {
-            null
-        }
+    fun getSignInIntent(): android.content.Intent {
+        return signInClient.signInIntent
     }
 
     fun getLastSignedInAccount(): GoogleSignInAccount? {
